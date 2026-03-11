@@ -28,13 +28,15 @@
     <h1>Learning-Based Multi-Terrain Robot Locomotion</h1>
     <div class="project-meta">
         <div class="meta-item"><span>Institution:</span> UC Berkeley</div>
-        <div class="meta-item"><span>Timeline:</span> Sep 2025 – Present</div>
-        <div class="meta-item"><span>Status:</span> In Progress</div>
+        <div class="meta-item"><span>Course:</span> MECENG 239 — Robotic Locomotion</div>
+        <div class="meta-item"><span>Timeline:</span> Sep 2025 – Dec 2025</div>
+        <div class="meta-item"><span>Status:</span> Completed</div>
     </div>
     <p class="project-intro">
-        Training a Unitree G1 humanoid robot to walk across varied terrains using PPO-based 
-        reinforcement learning in MuJoCo Playground. Exploring terrain-adaptive locomotion 
-        policies and the foundations for sim-to-real transfer.
+        Trained a Unitree G1 humanoid robot to walk across flat and rough terrains using 
+        PPO-based reinforcement learning in MuJoCo Playground. Developed a multi-objective 
+        reward function for stable bipedal gait, then analyzed locomotion behavior across 
+        50 commanded velocities comparing smooth and rough terrain performance.
     </p>
 
     <div class="tags" style="margin-bottom: 2rem;">
@@ -43,10 +45,12 @@
         <span class="tag">MuJoCo</span>
         <span class="tag">Python</span>
         <span class="tag">Unitree G1</span>
+        <span class="tag">Gait Analysis</span>
+        <span class="tag">Sim-to-Real</span>
     </div>
 
-    <div class="image-placeholder hero-img">[ Add hero image: MuJoCo simulation screenshot of G1 walking ]</div>
-    <div class="image-caption">Fig 1. Unitree G1 in MuJoCo Playground simulation</div>
+    <video src="../images/RL_rough_walk_simulation.mp4" autoplay loop muted playsinline></video>
+    <div class="image-caption">Unitree G1 humanoid walking on rough terrain — trained policy in MuJoCo Playground</div>
 </section>
 
 <section class="project-content">
@@ -54,66 +58,112 @@
     <div class="content-section">
         <h2>Problem & Motivation</h2>
         <p>
-            Humanoid robots need to traverse diverse terrain — flat ground, slopes, stairs, 
-            rough surfaces — without hand-tuned gaits for each surface. Reinforcement learning 
-            offers a path to policies that generalize across terrain types, but training stable 
-            bipedal locomotion is notoriously difficult due to the high dimensionality of 
-            humanoid dynamics and the narrow stability margins.
+            Humanoid robots need to traverse diverse terrain — flat ground, slopes, and rough 
+            surfaces — without hand-tuned gaits for each condition. Reinforcement learning 
+            offers a path to policies that generalize, but training stable bipedal locomotion 
+            is notoriously difficult due to the high dimensionality of humanoid dynamics and 
+            the narrow stability margins of bipedal walking.
         </p>
         <p>
-            <!-- Add more detail as project progresses -->
-            This project is exploring how PPO-based training in simulation can produce 
-            robust walking policies for the Unitree G1 across multiple terrain conditions.
+            The objective was to analyze how a learned locomotion policy behaves on different 
+            terrains and to build the trajectory dataset needed for a unified diffusion-based 
+            gait model for the Unitree G1 humanoid.
         </p>
     </div>
 
     <div class="content-section">
-        <h2>Approach</h2>
+        <h2>Simulation Environment</h2>
         <p>
-            <!-- Placeholder for more detailed approach description -->
-            Using MuJoCo Playground as the simulation environment, the G1 humanoid model is 
-            trained with Proximal Policy Optimization (PPO) to develop walking gaits. The 
-            training curriculum exposes the policy to varied terrain conditions to encourage 
-            robust generalization.
+            The Unitree G1 humanoid was modeled in MuJoCo Playground using an MJCF definition 
+            that captures the full kinematic structure (links, joints), physical properties 
+            (mass, inertia, material friction), actuator models (motors, gear ratios, torque limits), 
+            and onboard sensors (IMU, encoders). The MuJoCo physics engine solves the Lagrangian 
+            dynamics at each timestep, handling contact dynamics and enforcing joint constraints.
         </p>
-        <div class="image-placeholder inline-img">[ Add image: training setup diagram or terrain variations ]</div>
-        <div class="image-caption">Fig 2. Training environment and terrain variations</div>
-        <ul>
-            <li>PPO-based policy training with terrain randomization</li>
-            <li>Reward shaping for stable bipedal gait and forward progress</li>
-            <li>Domain randomization for robustness to terrain variation</li>
-            <!-- Add more bullet points as the project develops -->
-        </ul>
+        <p>
+            Two terrain environments were used: <strong>G1JoystickFlatTerrain</strong> for initial 
+            policy training, and <strong>G1JoystickRoughTerrain</strong> for transfer and fine-tuning. 
+            The policy observes the state vector s = [q, q̇, v_desired] and outputs joint torques.
+        </p>
     </div>
 
     <div class="content-section">
-        <h2>Results</h2>
+        <h2>RL Approach & Reward Design</h2>
         <p>
-            <!-- Placeholder — update with actual results -->
-            Results will be updated as the project progresses. Initial training has focused 
-            on flat-ground locomotion before introducing terrain complexity.
+            A PPO (Proximal Policy Optimization) actor-critic architecture was trained with a 
+            carefully designed multi-objective reward function. The reward balances velocity 
+            tracking against gait quality, stability, energy efficiency, and safety penalties. 
+            The policy was first trained on flat terrain, then retrained on rough terrain to 
+            develop terrain-adaptive behavior.
+        </p>
+        <img src="../images/rl-locomotion-pipeline.svg" alt="PPO reinforcement learning pipeline for humanoid locomotion">
+        <div class="image-caption">Fig 1. End-to-end PPO training pipeline — environment setup, reward shaping, and multi-terrain evaluation</div>
+        <p>
+            Key reward components included linear and angular velocity tracking terms, gait 
+            quality rewards (feet airtime, clearance, phase coordination, slip prevention), 
+            stability terms (body orientation, joint torque minimization), and penalties for 
+            termination, standing still, and undesired vertical or angular motion.
+        </p>
+    </div>
+
+    <div class="content-section">
+        <h2>Speed Tracking Performance</h2>
+        <p>
+            The trained policy was evaluated across 50 commanded velocities (0.5–1.5 m/s) 
+            on both smooth and rough terrain. The results show how well the robot tracks 
+            commanded speeds and the magnitude of tracking error across terrain types.
+        </p>
+        <img src="../images/RL_speed_tracking.png" alt="Speed tracking performance and error on smooth vs rough terrain">
+        <div class="image-caption">Fig 2. Speed tracking performance — actual speed vs commanded speed (left) and mean absolute tracking error (right) across smooth and rough terrain</div>
+    </div>
+
+    <div class="content-section">
+        <h2>Gait Analysis — Stride Characteristics</h2>
+        <p>
+            Stride frequency and stride length were analyzed as a function of commanded speed to 
+            understand how the learned gait adapts. On smooth terrain, the robot primarily increases 
+            stride length to walk faster, while stride frequency remains relatively stable. On rough 
+            terrain, both metrics show more variability as the policy adapts to uneven footing.
+        </p>
+        <img src="../images/RL_stride.png" alt="Stride frequency and stride length vs commanded speed">
+        <div class="image-caption">Fig 3. Stride frequency (left) and stride length (right) vs commanded speed — smooth and rough terrain comparison</div>
+    </div>
+
+    <div class="content-section">
+        <h2>Foot Swing Analysis</h2>
+        <p>
+            The foot swing peak height reveals how the policy handles ground clearance at different 
+            speeds and terrain conditions. At low speed (0.5 m/s), the gait is compact with consistent 
+            clearance. At higher speed (1.5 m/s), swing height increases to maintain clearance, 
+            with more variability on rough terrain as the policy reacts to surface irregularities.
         </p>
         <div class="image-row">
             <div>
-                <div class="image-placeholder small-img">[ Add plot: training reward curves ]</div>
-                <div class="image-caption">Fig 3. Training progress</div>
+                <img src="../images/RL_feet_swing_0_5.png" alt="Foot swing height at 0.5 m/s on smooth and rough terrain">
+                <div class="image-caption">Fig 4. Foot swing peak height at v = 0.5 m/s — smooth (left) vs rough (right)</div>
             </div>
             <div>
-                <div class="image-placeholder small-img">[ Add image: different terrain walking ]</div>
-                <div class="image-caption">Fig 4. Multi-terrain performance</div>
+                <img src="../images/RL_feet_swing_1_5.png" alt="Foot swing height at 1.5 m/s on smooth and rough terrain">
+                <div class="image-caption">Fig 5. Foot swing peak height at v = 1.5 m/s — smooth (left) vs rough (right)</div>
             </div>
         </div>
     </div>
 
     <div class="content-section">
-        <h2>What I'm Learning</h2>
+        <h2>What I Learned</h2>
         <p>
-            <!-- Placeholder — update as project progresses -->
-            This project is deepening my understanding of reinforcement learning for 
-            physical systems, reward engineering for locomotion, and the practical challenges 
-            of training high-dimensional control policies. It complements my controls 
-            background by approaching the same problem (making robots move) from a 
-            learning-based rather than model-based perspective.
+            This project deepened my understanding of reinforcement learning for physical systems 
+            in several concrete ways. Reward engineering is where the real work happens — the 
+            multi-objective reward function required careful balancing of competing objectives 
+            (track speed vs. minimize energy vs. maintain stability). Small changes in reward 
+            weights produced dramatically different gaits.
+        </p>
+        <p>
+            The smooth-to-rough terrain transfer also highlighted the challenges of policy 
+            generalization: a policy that works perfectly on flat ground develops habits (like 
+            minimal foot clearance) that fail on uneven terrain. Retraining with terrain 
+            randomization produced more robust but slightly less efficient gaits — a classic 
+            robustness-performance tradeoff that mirrors what I've seen in classical control design.
         </p>
     </div>
 
