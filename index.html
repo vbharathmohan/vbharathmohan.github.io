@@ -250,6 +250,32 @@
         </div>
     </div>
 
+
+    <div class="project">
+        <h3>SafetyIQ: Industrial Safety Documentation Assistant</h3>
+        <div class="project-context">UC Berkeley, 2026</div>
+        <p style="font-size: 0.92rem; color: var(--text-light); margin-bottom: 0.75rem;">A RAG application that lets engineers query industrial safety and equipment documentation using plain English, returning precise answers with source document and page number citations. Built for a safety-critical domain where hallucinated answers are unacceptable.</p>
+        <ul>
+            <li>Built a Retrieval-Augmented Generation pipeline using LangChain that ingests, chunks, embeds, and retrieves from a corpus of OSHA standards, API recommended practices, and equipment manuals</li>
+            <li>Implemented MMR-based retrieval to balance relevance and diversity across a multi-document vector store, preventing redundant retrieval from single sections</li>
+            <li>Enforced zero-hallucination generation with constrained prompting and explicit refusal behavior, ensuring the system never fabricates safety or compliance information</li>
+            <li>Supports single-document queries, cross-document retrieval (pulling from multiple sources in one answer), and correct refusal when information is not in the corpus</li>
+            <li>Built a Streamlit web interface with source attribution cards showing document name and page number for every retrieved chunk</li>
+        </ul>
+        <div class="tags">
+            <span class="tag">LangChain</span>
+            <span class="tag">OpenAI</span>
+            <span class="tag">ChromaDB</span>
+            <span class="tag">RAG</span>
+            <span class="tag">Streamlit</span>
+            <span class="tag">PyMuPDF</span>
+            <span class="tag">Python</span>
+        </div>
+        <a href="https://github.com/vbharathmohan/bharath-data-portfolio/tree/main/safetyiq" class="github-link" target="_blank">View on GitHub</a>
+    </div>
+
+    
+
     <div class="project">
         <h3>Multi-Agent Cooperative Defense using Deep Reinforcement Learning</h3>
         <div class="project-context">UC Berkeley, 2026</div>
@@ -271,7 +297,6 @@
             <span class="tag">NumPy</span>
             <span class="tag">Multi-Agent RL</span>
         </div>
-        
     </div>
 
     <div class="project">
